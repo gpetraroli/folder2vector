@@ -1,8 +1,18 @@
+import os
+from pathlib import Path
+
 import yaml
 
-def load_config(path: str) -> dict:
+
+def config_path() -> Path:
+    if explicit := os.environ.get("FOLDER2VECTOR_CONFIG"):
+        return Path(explicit)
+    return Path.cwd() / "config.yaml"
+
+
+def load_config(path: str | Path) -> dict:
     try:
-        with open(path, 'r', encoding='utf-8') as file:
+        with open(path, "r", encoding="utf-8") as file:
             config = yaml.safe_load(file)
 
     except FileNotFoundError:
@@ -13,5 +23,6 @@ def load_config(path: str) -> dict:
 
     return config
 
-SETTINGS = load_config("config.yaml")
+
+SETTINGS = load_config(config_path())
 WATCH_PATH = SETTINGS["app"]["watch_path"]

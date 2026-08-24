@@ -2,9 +2,10 @@ import os
 import time
 from watchdog.observers import Observer
 
-from config import WATCH_PATH
-from vectorizer.file_processor import process_file
-from directory_watcher.watcher import MarkdownWatcher
+from .config import WATCH_PATH
+from .vectorizer.file_processor import process_file
+from .directory_watcher.watcher import MarkdownWatcher
+
 
 def run():
     os.makedirs(WATCH_PATH, exist_ok=True)
@@ -23,8 +24,9 @@ def run():
     except KeyboardInterrupt:
         observer.stop()
         print("🛑 File watcher stopped.")
-        
+
     observer.join()
+
 
 if __name__ == "__main__":
     run()
