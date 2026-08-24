@@ -26,3 +26,6 @@ def load_config(path: str | Path) -> dict:
 
 SETTINGS = load_config(config_path())
 WATCH_PATH = SETTINGS["app"]["watch_path"]
+OLLAMA_URL = SETTINGS["app"]["ollama_url"]
+EMBEDDING_MODEL = SETTINGS["app"]["embedding_model"]
+DB_CONNECTION = SETTINGS["app"]["db_connection"]

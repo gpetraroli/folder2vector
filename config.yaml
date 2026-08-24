@@ -1,2 +1,5 @@
 app:
   watch_path: "/home/giuseppe/Desktop/test/"
+  ollama_url: "http://localhost:11434"
+  embedding_model: "nomic-embed-text-v2-moe"
+  db_connection: "postgresql+psycopg://postgres:postgres@localhost:5432/vectordb"
