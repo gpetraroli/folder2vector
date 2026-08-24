@@ -10,17 +10,8 @@ class TextProcessor:
     def process(self, file_path: str) -> None:
         splits = self.split_text_document(file_path)
 
-        embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_URL)
+        self.embed_documents(splits)
 
-        vector_store = PGVector(
-            embeddings=embeddings,
-            collection_name="documents",
-            connection=DB_CONNECTION,
-            use_jsonb=True,
-        )
-
-        vector_store.add_documents(splits)
-        
 
     def split_text_document(self, file_path: str) -> list[Document]:
         """ Split a text document into chunks """
@@ -36,3 +27,16 @@ class TextProcessor:
         splits = text_splitter.split_documents(docs)
 
         return splits
+
+
+    def embed_documents(self, documents: list[Document]):
+        embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_URL)
+
+        vector_store = PGVector(
+            embeddings=embeddings,
+            collection_name="documents",
+            connection=DB_CONNECTION,
+            use_jsonb=True,
+        )
+
+        vector_store.add_documents(documents)
