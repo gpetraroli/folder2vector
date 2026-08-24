@@ -4,7 +4,7 @@ from watchdog.observers import Observer
 
 from config import WATCH_PATH
 from vectorizer.file_processor import process_file
-from watcher import MarkdownWatcher
+from directory_watcher.watcher import MarkdownWatcher
 
 def run():
     os.makedirs(WATCH_PATH, exist_ok=True)
