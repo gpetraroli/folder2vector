@@ -5,8 +5,9 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_postgres import PGVector
 
 from ...config import EMBEDDING_MODEL, OLLAMA_URL, DB_CONNECTION
+from .file_processor_interface import FileProcessorInterface
 
-class TextProcessor:
+class TextProcessor(FileProcessorInterface):
     def process(self, file_path: str) -> None:
         splits = self.split_text_document(file_path)
 
