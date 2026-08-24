@@ -8,10 +8,7 @@ class MarkdownWatcher(FileSystemEventHandler):
         self.process_file = process_file
 
     def on_created(self, event: FileCreatedEvent):
-        if event.is_directory:
-            return
-
-        if self.is_temporary_file(event.src_path):
+        if event.is_directory or self.is_temporary_file(event.src_path):
             return
         
         if os.path.getsize(event.src_path) == 0:
@@ -20,14 +17,16 @@ class MarkdownWatcher(FileSystemEventHandler):
         self.process_file(event.src_path)
 
     def on_modified(self, event):
-        # TODO: Handle modified files
-        print(f"Modified file: {event.src_path}")
-        return
+        if event.is_directory or self.is_temporary_file(event.src_path):
+            return
+
+        self.process_file(event.src_path)
 
     def on_deleted(self, event):
-        # TODO: Handle deleted files
+        if event.is_directory or self.is_temporary_file(event.src_path):
+            return
+
         print(f"Deleted file: {event.src_path}")
-        return
 
     def on_moved(self, event):
         # TODO: Handle moved files
@@ -35,7 +34,7 @@ class MarkdownWatcher(FileSystemEventHandler):
         return
 
     def is_temporary_file(self, file_path: str) -> bool:
-        temp_suffixes = (".part", ".tmp", ".crdownload", ".download", ".swp")
+        temp_suffixes = (".part", ".tmp", ".crdownload", ".download", ".swp", ".kate-swp")
 
         name = os.path.basename(file_path)
         if name.startswith(".") or name.startswith("~$"):
