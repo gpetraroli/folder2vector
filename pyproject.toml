@@ -26,6 +26,6 @@ folder2vector = "src"
 packages = [
     "folder2vector",
     "folder2vector.directory_watcher",
-    "folder2vector.vectorizer",
-    "folder2vector.vectorizer.file_processor",
+    "folder2vector.ingest",
+    "folder2vector.ingest.file_processor",
 ]

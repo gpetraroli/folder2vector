@@ -3,7 +3,7 @@ import time
 from watchdog.observers import Observer
 
 from .config import WATCH_PATH
-from .vectorizer.file_processor import process_file
+from .ingest.file_processor import process_file
 from .directory_watcher.watcher import MarkdownWatcher
 
 
