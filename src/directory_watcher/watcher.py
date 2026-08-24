@@ -7,14 +7,13 @@ class MarkdownWatcher(FileSystemEventHandler):
     def __init__(self, process_file: Callable[[str], None]):
         self.process_file = process_file
 
-
     def on_created(self, event: FileCreatedEvent):
         if event.is_directory:
             return
 
         if self.is_temporary_file(event.src_path):
             return
-                    
+        
         if os.path.getsize(event.src_path) == 0:
             return
 
