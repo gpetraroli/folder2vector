@@ -3,15 +3,11 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from folder2vector.config import CHUNK_OVERLAP, CHUNK_SIZE
-from repository.pgvector_repository import PGVectorRepository
 
 from .file_processor_interface import FileProcessorInterface
 
 
 class TextProcessor(FileProcessorInterface):
-    def __init__(self):
-        self.pgvector_repository = PGVectorRepository()
-
     def __str__(self) -> str:
         return "TextProcessor"
 

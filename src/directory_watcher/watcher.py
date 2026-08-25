@@ -27,7 +27,6 @@ class MarkdownWatcher(FileSystemEventHandler):
             return
 
         self.unmark_touched(event.src_path)
-        print(f"Deleted file: {event.src_path}")
 
     def on_moved(self, event):
         if event.is_directory:
@@ -37,16 +36,10 @@ class MarkdownWatcher(FileSystemEventHandler):
         if not self.is_temporary_file(event.dest_path):
             self.mark_touched(event.dest_path)
 
-        print(f"Moved file: {event.src_path} -> {event.dest_path}")
-
     def mark_touched(self, file_path: str) -> None:
         path = os.path.abspath(file_path)
         with self._lock:
-            is_new = path not in self._pending_files
             self._pending_files[path] = time.monotonic()
-
-        if is_new:
-            print(f"File queued; ingest after idle settle: {path}")
 
     def unmark_touched(self, file_path: str) -> None:
         path = os.path.abspath(file_path)

@@ -13,7 +13,6 @@ def run():
     os.makedirs(WATCH_PATH, exist_ok=True)
 
     print(f"Starting file watcher on: {WATCH_PATH}")
-    print(f"Ingest after {SETTLE_SECONDS}s without further changes.")
     print("Press Ctrl+C to stop.")
 
     event_handler = MarkdownWatcher()
