@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "folder2vector"
 version = "0.1.0"
+authors = [
+    { name = "Giuseppe Petraroli", email = "g.petraroli@gmail.com" }
+]
 requires-python = ">=3.11"
 dependencies = [
     "watchdog==6.0.0",
@@ -14,6 +17,13 @@ dependencies = [
     "langchain-ollama",
     "langchain-postgres",
     "psycopg[binary]",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.3.0",
+    "pytest>=8.0.0",
+    "mypy>=1.9.0"
 ]
 
 [project.scripts]
@@ -29,3 +39,10 @@ packages = [
     "folder2vector.ingest",
     "folder2vector.ingest.file_processor",
 ]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

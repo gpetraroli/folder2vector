@@ -1,6 +1,11 @@
 import os
 from typing import Callable
-from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileModifiedEvent, FileDeletedEvent, FileMovedEvent
+
+from watchdog.events import (
+    FileCreatedEvent,
+    FileSystemEventHandler,
+)
+
 
 class MarkdownWatcher(FileSystemEventHandler):
 
@@ -34,7 +39,14 @@ class MarkdownWatcher(FileSystemEventHandler):
         return
 
     def is_temporary_file(self, file_path: str) -> bool:
-        temp_suffixes = (".part", ".tmp", ".crdownload", ".download", ".swp", ".kate-swp")
+        temp_suffixes = (
+            ".part",
+            ".tmp",
+            ".crdownload",
+            ".download",
+            ".swp",
+            ".kate-swp",
+        )
 
         name = os.path.basename(file_path)
         if name.startswith(".") or name.startswith("~$"):

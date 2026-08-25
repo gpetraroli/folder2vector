@@ -1,11 +1,12 @@
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document
 from langchain_community.document_loaders import TextLoader
+from langchain_core.documents import Document
 from langchain_ollama import OllamaEmbeddings
 from langchain_postgres import PGVector
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from ...config import EMBEDDING_MODEL, OLLAMA_URL, DB_CONNECTION
+from ...config import DB_CONNECTION, EMBEDDING_MODEL, OLLAMA_URL
 from .file_processor_interface import FileProcessorInterface
+
 
 class TextProcessor(FileProcessorInterface):
     def process(self, file_path: str) -> None:
@@ -13,9 +14,8 @@ class TextProcessor(FileProcessorInterface):
 
         self.embed_documents(splits)
 
-
     def split_text_document(self, file_path: str) -> list[Document]:
-        """ Split a text document into chunks """
+        """Split a text document into chunks"""
 
         loader = TextLoader(file_path)
         docs = loader.load()
@@ -28,7 +28,6 @@ class TextProcessor(FileProcessorInterface):
         splits = text_splitter.split_documents(docs)
 
         return splits
-
 
     def embed_documents(self, documents: list[Document]):
         embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_URL)
