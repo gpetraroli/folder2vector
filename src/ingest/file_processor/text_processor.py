@@ -12,6 +12,9 @@ class TextProcessor(FileProcessorInterface):
     def __init__(self):
         self.pgvector_repository = PGVectorRepository()
 
+    def __str__(self) -> str:
+        return "TextProcessor"
+
     def process(self, file_path: str) -> None:
         splits = self.split_text_document(file_path)
 
