@@ -2,6 +2,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from folder2vector.config import CHUNK_OVERLAP, CHUNK_SIZE
 from repository.pgvector_repository import PGVectorRepository
 
 from .file_processor_interface import FileProcessorInterface
@@ -23,8 +24,8 @@ class TextProcessor(FileProcessorInterface):
         docs = loader.load()
 
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,
-            chunk_overlap=200,
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=CHUNK_OVERLAP,
         )
 
         splits = text_splitter.split_documents(docs)

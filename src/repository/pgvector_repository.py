@@ -3,7 +3,12 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_postgres import PGVector
 from sqlalchemy import delete as sql_delete
 
-from folder2vector.config import DB_CONNECTION, EMBEDDING_MODEL, OLLAMA_URL
+from folder2vector.config import (
+    COLLECTION_NAME,
+    DB_CONNECTION,
+    EMBEDDING_MODEL,
+    OLLAMA_URL,
+)
 
 
 class PGVectorRepository:
@@ -11,7 +16,7 @@ class PGVectorRepository:
         self.embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_URL)
         self.vector_store = PGVector(
             embeddings=self.embeddings,
-            collection_name="documents",
+            collection_name=COLLECTION_NAME,
             connection=DB_CONNECTION,
             use_jsonb=True,
         )
