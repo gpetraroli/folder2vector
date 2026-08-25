@@ -1,9 +1,6 @@
 from langchain_community.document_loaders import TextLoader
 from langchain_core.documents import Document
-from langchain_text_splitters import (
-    MarkdownHeaderTextSplitter,
-    RecursiveCharacterTextSplitter,
-)
+from langchain_text_splitters import MarkdownHeaderTextSplitter, MarkdownTextSplitter
 
 from folder2vector.config import CHUNK_OVERLAP, CHUNK_SIZE
 
@@ -42,7 +39,7 @@ class MarkdownProcessor(FileProcessorInterface):
 
             header_splits.extend(splits)
             
-        text_splitter = RecursiveCharacterTextSplitter(
+        text_splitter = MarkdownTextSplitter(
             chunk_size=CHUNK_SIZE,
             chunk_overlap=CHUNK_OVERLAP,
         )
