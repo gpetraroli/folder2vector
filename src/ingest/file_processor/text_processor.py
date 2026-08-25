@@ -4,7 +4,8 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_postgres import PGVector
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from ...config import DB_CONNECTION, EMBEDDING_MODEL, OLLAMA_URL
+from folder2vector.config import DB_CONNECTION, EMBEDDING_MODEL, OLLAMA_URL
+
 from .file_processor_interface import FileProcessorInterface
 
 

@@ -29,16 +29,8 @@ dev = [
 [project.scripts]
 folder2vector = "folder2vector.main:run"
 
-[tool.setuptools.package-dir]
-folder2vector = "src"
-
-[tool.setuptools]
-packages = [
-    "folder2vector",
-    "folder2vector.directory_watcher",
-    "folder2vector.ingest",
-    "folder2vector.ingest.file_processor",
-]
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.ruff]
 line-length = 88

@@ -1,10 +1,12 @@
 import os
 import time
+
 from watchdog.observers import Observer
 
+from directory_watcher.watcher import MarkdownWatcher
+from ingest.file_processor import process_file
+
 from .config import WATCH_PATH
-from .ingest.file_processor import process_file
-from .directory_watcher.watcher import MarkdownWatcher
 
 
 def run():
