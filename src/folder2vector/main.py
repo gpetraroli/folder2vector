@@ -4,7 +4,7 @@ import time
 from watchdog.observers import Observer
 
 from directory_watcher.watcher import MarkdownWatcher
-from ingest.file_processor import process_file
+from ingest.file_processor.dispatcher import process_file
 
 from .config import WATCH_PATH
 
