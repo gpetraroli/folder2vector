@@ -51,7 +51,7 @@ class MarkdownWatcher(FileSystemEventHandler):
         files_ready_to_be_processed: list[str] = []
 
         with self._lock:
-            for path, touched_at in self._pending_files.items():
+            for path, touched_at in list(self._pending_files.items()):
                 if now - touched_at >= settle_seconds:
                     files_ready_to_be_processed.append(path)
                     del self._pending_files[path]
