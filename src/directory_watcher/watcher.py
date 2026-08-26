@@ -4,6 +4,8 @@ import time
 
 from watchdog.events import FileSystemEventHandler
 
+from .utils import is_temporary_file
+
 
 class Watcher(FileSystemEventHandler):
     def __init__(self):
@@ -11,19 +13,19 @@ class Watcher(FileSystemEventHandler):
         self._pending_files: dict[str, float] = {}
 
     def on_created(self, event):
-        if event.is_directory or self.is_temporary_file(event.src_path):
+        if event.is_directory or is_temporary_file(event.src_path):
             return
 
         self.mark_touched(event.src_path)
 
     def on_modified(self, event):
-        if event.is_directory or self.is_temporary_file(event.src_path):
+        if event.is_directory or is_temporary_file(event.src_path):
             return
 
         self.mark_touched(event.src_path)
 
     def on_deleted(self, event):
-        if event.is_directory or self.is_temporary_file(event.src_path):
+        if event.is_directory or is_temporary_file(event.src_path):
             return
 
         self.mark_touched(event.src_path)
@@ -32,10 +34,10 @@ class Watcher(FileSystemEventHandler):
         if event.is_directory:
             return
 
-        if not self.is_temporary_file(event.src_path):
+        if not is_temporary_file(event.src_path):
             self.mark_touched(event.src_path)
 
-        if not self.is_temporary_file(event.dest_path):
+        if not is_temporary_file(event.dest_path):
             self.mark_touched(event.dest_path)
 
     def mark_touched(self, file_path: str) -> None:
@@ -54,19 +56,4 @@ class Watcher(FileSystemEventHandler):
                     del self._pending_files[path]
 
         return files_ready_to_be_processed
-
-    def is_temporary_file(self, file_path: str) -> bool:
-        temp_suffixes = (
-            ".part",
-            ".tmp",
-            ".crdownload",
-            ".download",
-            ".swp",
-            ".kate-swp",
-        )
-
-        name = os.path.basename(file_path)
-        if name.startswith(".") or name.startswith("~$"):
-            return True
-
-        return name.endswith(temp_suffixes)
+    
