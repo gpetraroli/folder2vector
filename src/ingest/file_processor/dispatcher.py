@@ -19,13 +19,12 @@ def process_file(file_path: str) -> None:
     if not os.path.isfile(file_path):
         repository = PGVectorRepository()
         repository.delete_existing_chunks(file_path)
+        print(f"Deleted existing chunks for file: {file_path}")
         return
 
     extension = Path(file_path).suffix.lower()
     processor = PROCESSORS.get(extension)
     
-    print(f"Processing file: {file_path} with {processor}")
-
     if processor is None:
         print(f"Skipping unsupported file type: {file_path}")
         return
