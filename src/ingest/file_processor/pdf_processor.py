@@ -18,11 +18,9 @@ class PDFProcessor(FileProcessorInterface):
 
     def split_pdf_document(self, file_path: str) -> list[Document]:
         loader = PyPDFLoader(file_path)
-        docs = [doc for doc in loader.load() if doc.page_content.strip()]
 
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=CHUNK_SIZE,
             chunk_overlap=CHUNK_OVERLAP,
         )
-        return text_splitter.split_documents(docs)
-        
+        return text_splitter.split_documents(loader.load())

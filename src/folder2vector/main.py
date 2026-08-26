@@ -23,7 +23,7 @@ def run():
     try:
         while True:
             for path in event_handler.pop_ready(SETTLE_SECONDS):
-                if not os.path.isfile(path) or os.path.getsize(path) == 0:
+                if not os.path.isfile(path):
                     continue
 
                 process_file(path)

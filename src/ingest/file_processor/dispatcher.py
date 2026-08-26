@@ -1,12 +1,14 @@
 from pathlib import Path
 
 from .markdown_processor import MarkdownProcessor
+from .pdf_processor import PDFProcessor
 from .text_processor import TextProcessor
 
 PROCESSORS = {
     ".md": MarkdownProcessor(),
     ".markdown": MarkdownProcessor(),
     ".txt": TextProcessor(),
+    ".pdf": PDFProcessor(),
 }
 
 
