@@ -28,7 +28,7 @@ dev = [
 ]
 
 [project.scripts]
-folder2vector = "folder2vector.main:run"
+folder2vector = "folder2vector.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

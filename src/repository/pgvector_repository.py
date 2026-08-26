@@ -32,7 +32,16 @@ class PGVectorRepository:
             session.execute(
                 sql_delete(self.vector_store.EmbeddingStore).where(
                     self.vector_store.EmbeddingStore.collection_id == collection.uuid,
-                    self.vector_store.EmbeddingStore.cmetadata.contains({"source": file_path}),
+                    self
+                        .vector_store
+                        .EmbeddingStore
+                        .cmetadata
+                        .contains({"source": file_path}),
                 )
             )
             session.commit()
+
+    def reset_collection(self) -> None:
+        self.vector_store.delete_collection()
+        self.vector_store.create_tables_if_not_exists()
+        self.vector_store.create_collection()
