@@ -22,10 +22,15 @@ def run():
 
     try:
         while True:
-            for path in event_handler.pop_ready(SETTLE_SECONDS):
-                process_file(path)
+            try:
+                for path in event_handler.pop_ready(SETTLE_SECONDS):
+                    process_file(path)
 
-            time.sleep(1)
+            except Exception as e:
+                print(f"Error processing file: {e}")
+                
+            finally:
+                time.sleep(1)
     except KeyboardInterrupt:
         observer.stop()
         print("🛑 File watcher stopped.")

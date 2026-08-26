@@ -5,6 +5,7 @@ app:
   embedding_model: "nomic-embed-text-v2-moe"
   db_connection: "postgresql+psycopg://postgres:postgres@localhost:5432/vectordb"
   collection_name: "documents"
+  store_relative_path: true
 
   chunk_size: 1000
   chunk_overlap: 200

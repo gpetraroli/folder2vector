@@ -24,6 +24,16 @@ def load_config(path: str | Path) -> dict:
     return config
 
 
+def get_source_path_to_store(absolute_file_path: str) -> str:
+    path = Path(absolute_file_path).resolve()
+    if not STORE_RELATIVE_PATH:
+        return str(path)
+    
+    watch = Path(WATCH_PATH).resolve()
+    
+    return path.relative_to(watch).as_posix()
+
+
 SETTINGS = load_config(config_path())
 WATCH_PATH = SETTINGS["app"]["watch_path"]
 OLLAMA_URL = SETTINGS["app"]["ollama_url"]
@@ -33,3 +43,4 @@ COLLECTION_NAME = SETTINGS["app"]["collection_name"]
 CHUNK_SIZE = SETTINGS["app"]["chunk_size"]
 CHUNK_OVERLAP = SETTINGS["app"]["chunk_overlap"]
 SETTLE_SECONDS = SETTINGS["app"]["settle_seconds"]
+STORE_RELATIVE_PATH = SETTINGS["app"]["store_relative_path"]

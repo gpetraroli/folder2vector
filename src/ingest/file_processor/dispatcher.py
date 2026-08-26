@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from folder2vector.config import get_source_path_to_store
 from repository.pgvector_repository import PGVectorRepository
 
 from .markdown_processor import MarkdownProcessor
@@ -17,8 +18,9 @@ PROCESSORS = {
 
 def process_file(file_path: str) -> None:
     if not os.path.isfile(file_path):
+        source_path = get_source_path_to_store(file_path)
         repository = PGVectorRepository()
-        repository.delete_existing_chunks(file_path)
+        repository.delete_existing_chunks(source_path)
         print(f"Deleted existing chunks for file: {file_path}")
         return
 
