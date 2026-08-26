@@ -45,7 +45,3 @@ class MarkdownProcessor(FileProcessorInterface):
         )
 
         return text_splitter.split_documents(header_splits)
-
-    def embed_documents(self, file_path: str, documents: list[Document]) -> None:
-        self.pgvector_repository.delete_existing_chunks(file_path)
-        self.pgvector_repository.embed_documents(documents)
