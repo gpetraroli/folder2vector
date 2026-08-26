@@ -3,7 +3,7 @@ import time
 
 from watchdog.observers import Observer
 
-from directory_watcher.watcher import MarkdownWatcher
+from directory_watcher.watcher import Watcher
 from ingest.file_processor import process_file
 
 from .config import SETTLE_SECONDS, WATCH_PATH
@@ -15,7 +15,7 @@ def run():
     print(f"Starting file watcher on: {WATCH_PATH}")
     print("Press Ctrl+C to stop.")
 
-    event_handler = MarkdownWatcher()
+    event_handler = Watcher()
     observer = Observer()
     observer.schedule(event_handler, WATCH_PATH, recursive=True)
     observer.start()
@@ -28,7 +28,7 @@ def run():
 
             except Exception as e:
                 print(f"Error processing file: {e}")
-                
+
             finally:
                 time.sleep(1)
     except KeyboardInterrupt:

@@ -5,7 +5,7 @@ import time
 from watchdog.events import FileSystemEventHandler
 
 
-class MarkdownWatcher(FileSystemEventHandler):
+class Watcher(FileSystemEventHandler):
     def __init__(self):
         self._lock = threading.Lock()
         self._pending_files: dict[str, float] = {}
