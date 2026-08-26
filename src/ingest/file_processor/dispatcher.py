@@ -1,4 +1,7 @@
+import os
 from pathlib import Path
+
+from repository.pgvector_repository import PGVectorRepository
 
 from .markdown_processor import MarkdownProcessor
 from .pdf_processor import PDFProcessor
@@ -13,6 +16,11 @@ PROCESSORS = {
 
 
 def process_file(file_path: str) -> None:
+    if not os.path.isfile(file_path):
+        repository = PGVectorRepository()
+        repository.delete_existing_chunks(file_path)
+        return
+
     extension = Path(file_path).suffix.lower()
     processor = PROCESSORS.get(extension)
     

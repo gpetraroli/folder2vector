@@ -26,13 +26,15 @@ class MarkdownWatcher(FileSystemEventHandler):
         if event.is_directory or self.is_temporary_file(event.src_path):
             return
 
-        self.unmark_touched(event.src_path)
+        self.mark_touched(event.src_path)
 
     def on_moved(self, event):
         if event.is_directory:
             return
 
-        self.unmark_touched(event.src_path)
+        if not self.is_temporary_file(event.src_path):
+            self.mark_touched(event.src_path)
+
         if not self.is_temporary_file(event.dest_path):
             self.mark_touched(event.dest_path)
 
@@ -40,11 +42,6 @@ class MarkdownWatcher(FileSystemEventHandler):
         path = os.path.abspath(file_path)
         with self._lock:
             self._pending_files[path] = time.monotonic()
-
-    def unmark_touched(self, file_path: str) -> None:
-        path = os.path.abspath(file_path)
-        with self._lock:
-            self._pending_files.pop(path, None)
 
     def pop_ready(self, settle_seconds: float) -> list[str]:
         now = time.monotonic()
