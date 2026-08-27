@@ -1,7 +1,9 @@
+import json
+
+import psycopg
 from langchain_core.documents import Document
 from langchain_ollama import OllamaEmbeddings
 from langchain_postgres import PGVector
-from sqlalchemy import delete as sql_delete
 
 from folder2vector.config import (
     COLLECTION_NAME,
@@ -9,6 +11,11 @@ from folder2vector.config import (
     EMBEDDING_MODEL,
     OLLAMA_URL,
 )
+
+
+def _psycopg_conninfo(sqlalchemy_url: str) -> str:
+    url = sqlalchemy_url.replace("postgresql+psycopg2://", "postgresql://", 1)
+    return url.replace("postgresql+psycopg://", "postgresql://", 1)
 
 
 class PGVectorRepository:
@@ -20,26 +27,23 @@ class PGVectorRepository:
             connection=DB_CONNECTION,
             use_jsonb=True,
         )
+        self._conninfo = _psycopg_conninfo(DB_CONNECTION)
 
     def embed_documents(self, documents: list[Document]):
         self.vector_store.add_documents(documents)
-    
+
     def delete_existing_chunks(self, file_path: str) -> None:
-        with self.vector_store._make_sync_session() as session:
-            collection = self.vector_store.get_collection(session)
-            if collection is None:
-                return
-            session.execute(
-                sql_delete(self.vector_store.EmbeddingStore).where(
-                    self.vector_store.EmbeddingStore.collection_id == collection.uuid,
-                    self
-                        .vector_store
-                        .EmbeddingStore
-                        .cmetadata
-                        .contains({"source": file_path}),
-                )
+        with psycopg.connect(self._conninfo) as connection:
+            connection.execute(
+                """
+                DELETE FROM langchain_pg_embedding AS e
+                USING langchain_pg_collection AS c
+                WHERE e.collection_id = c.uuid
+                    AND c.name = %s
+                    AND e.cmetadata @> %s::jsonb
+                """,
+                (COLLECTION_NAME, json.dumps({"source": file_path})),
             )
-            session.commit()
 
     def reset_collection(self) -> None:
         self.vector_store.delete_collection()

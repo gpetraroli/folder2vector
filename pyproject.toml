@@ -15,7 +15,7 @@ dependencies = [
     "langchain",
     "langchain-community",
     "langchain-ollama",
-    "langchain-postgres",
+    "langchain-postgres==0.0.17",
     "psycopg[binary]",
     "pypdf",
 ]
