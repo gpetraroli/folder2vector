@@ -9,7 +9,7 @@ from directory_watcher.utils import is_temporary_file
 from directory_watcher.watcher import Watcher
 from ingest.file_processor import process_file
 from ingest.file_processor.dispatcher import PROCESSORS
-from repository.pgvector_repository import PGVectorRepository
+from pgvector_repository import PGVectorRepository
 
 from .config import SETTLE_SECONDS, WATCH_PATH
 
@@ -46,6 +46,7 @@ def run():
 def init() -> None:
     os.makedirs(WATCH_PATH, exist_ok=True)
     PGVectorRepository().reset_collection()
+
     for file_path in iter_supported_files(WATCH_PATH):
         try:
             process_file(file_path)
@@ -57,7 +58,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="folder2vector")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    init_parser = sub.add_parser("init", help="Create/empty the collection and ingest all files")
+    init_parser = sub.add_parser(
+        "init", 
+        help="Create/empty the collection and ingest all files"
+    )
     init_parser.add_argument("--force", action="store_true")
 
     sub.add_parser("watch", help="Watch watch_path for changes")
@@ -65,7 +69,9 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "init":
         if not args.force:
-            answer = input("This deletes all embeddings in the collection. Continue? [y/N] ")
+            answer = input(
+                "This deletes all embeddings in the collection. Continue? [y/N] "
+            )
             if answer.lower() != "y":
                 return
         init()
