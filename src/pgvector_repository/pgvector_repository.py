@@ -1,7 +1,10 @@
+from typing import Any
+
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_postgres import PGVector
-from sqlalchemy import delete
+from sqlalchemy import cast, delete
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 class PGVectorRepository:
@@ -11,33 +14,41 @@ class PGVectorRepository:
         collection_name: str,
         embeddings: Embeddings,
     ) -> None:
-        self.embeddings = embeddings
-
         self.vector_store = PGVector(
-            embeddings=self.embeddings,
+            embeddings=embeddings,
             collection_name=collection_name,
             connection=connection_string,
             use_jsonb=True,
         )
 
-    def embed_documents(self, documents: list[Document]):
+    def embed_documents(self, documents: list[Document]) -> None:
         self.vector_store.add_documents(documents)
 
-    def delete_by_metadata(self, metadata: dict) -> None:
+    def delete_by_metadata(self, metadata: dict[str, Any]) -> None:
+        """Delete rows whose stored metadata contains the provided metadata.
+
+        Extra keys on the row are ignored: ``{"source": "a.md"}`` deletes a row
+        with ``{"source": "a.md", "page": 1}``. An empty dict would match every
+        row, so it is rejected.
+        """
+        if not metadata:
+            raise ValueError("metadata must be a non-empty dict")
+
         store = self.vector_store
-        with store._make_sync_session() as session:
+        with store.session_maker() as session:
             collection = store.get_collection(session)
             if not collection:
-                return
+                raise ValueError(
+                    f"Collection {store.collection_name!r} does not exist"
+                )
             session.execute(
                 delete(store.EmbeddingStore).where(
                     store.EmbeddingStore.collection_id == collection.uuid,
-                    store.EmbeddingStore.cmetadata.contains(metadata),
+                    store.EmbeddingStore.cmetadata.op("@>")(cast(metadata, JSONB)),
                 )
             )
             session.commit()
 
     def reset_collection(self) -> None:
         self.vector_store.delete_collection()
-        self.vector_store.create_tables_if_not_exists()
         self.vector_store.create_collection()
