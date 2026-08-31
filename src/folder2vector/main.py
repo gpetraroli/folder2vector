@@ -21,7 +21,7 @@ from pgvector_repository import PGVectorRepository
 from .config import SETTLE_SECONDS, WATCH_PATH
 
 
-def run():
+def watch():
     os.makedirs(WATCH_PATH, exist_ok=True)
 
     print(f"Starting file watcher on: {WATCH_PATH}")
@@ -34,15 +34,13 @@ def run():
 
     try:
         while True:
-            try:
-                for path in event_handler.pop_ready(SETTLE_SECONDS):
+            for path in event_handler.pop_ready(SETTLE_SECONDS):
+                try:
                     process_file(path)
+                except Exception as e:
+                    print(f"Error processing file: {path}: {e}")
 
-            except Exception as e:
-                print(f"Error processing file: {e}")
-
-            finally:
-                time.sleep(1)
+            time.sleep(1)
     except KeyboardInterrupt:
         observer.stop()
         print("🛑 File watcher stopped.")
@@ -89,7 +87,7 @@ def main() -> None:
                 return
         init()
     elif args.command == "watch":
-        run()
+        watch()
 
 
 def iter_supported_files(root: str):
@@ -107,4 +105,4 @@ def iter_supported_files(root: str):
 
 
 if __name__ == "__main__":
-    run()
+    watch()
