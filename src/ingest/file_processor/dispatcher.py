@@ -24,6 +24,21 @@ PROCESSORS = {
 }
 
 
+def process_directory(directory_path: str) -> None:
+    if os.path.isdir(directory_path):
+        return
+
+    source_path = get_source_path_to_store(directory_path)
+    embeddings = OllamaEmbeddings(
+        model=EMBEDDING_MODEL, base_url=OLLAMA_URL
+    )
+    repository = PGVectorRepository(
+        connection_string=DB_CONNECTION,
+        collection_name=COLLECTION_NAME,
+        embeddings=embeddings,
+    )
+    repository.delete_by_source_prefix(source_path)
+    print(f"Deleted existing chunks for directory: {directory_path}")
 
 
 def process_file(file_path: str) -> None:

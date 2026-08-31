@@ -14,7 +14,7 @@ from folder2vector.config import (
     EMBEDDING_MODEL,
     OLLAMA_URL,
 )
-from ingest.file_processor import process_file
+from ingest.file_processor import process_directory, process_file
 from ingest.file_processor.dispatcher import PROCESSORS
 from pgvector_repository import PGVectorRepository
 
@@ -34,11 +34,14 @@ def watch():
 
     try:
         while True:
-            for path in event_handler.pop_ready(SETTLE_SECONDS):
+            for pending_event in event_handler.pop_ready(SETTLE_SECONDS):
                 try:
-                    process_file(path)
+                    if pending_event.is_directory:
+                        process_directory(pending_event.path)
+                    else:
+                        process_file(pending_event.path)
                 except Exception as e:
-                    print(f"Error processing file: {path}: {e}")
+                    print(f"Error processing {pending_event.path}: {e}")
 
             time.sleep(1)
     except KeyboardInterrupt:
