@@ -1,11 +1,12 @@
 import os
 import threading
 import time
+from collections.abc import Collection
 from dataclasses import dataclass
 
 from watchdog.events import FileSystemEventHandler
 
-from .utils import is_temporary_file
+from .utils import should_process
 
 
 @dataclass
@@ -14,34 +15,51 @@ class PendingEvent:
     is_directory: bool
     touched_at: float
 
+
 class Watcher(FileSystemEventHandler):
-    def __init__(self):
+    def __init__(self, root: str, supported_suffixes: Collection[str]):
+        self._root = root
+        self._supported_suffixes = supported_suffixes
         self._lock = threading.Lock()
         self._pending_files: dict[str, PendingEvent] = {}
 
+    def _should_handle(self, path: str, *, is_directory: bool) -> bool:
+        return should_process(
+            path,
+            self._root,
+            is_directory=is_directory,
+            supported_suffixes=self._supported_suffixes,
+        )
+
     def on_created(self, event):
-        if event.is_directory or is_temporary_file(event.src_path):
+        if event.is_directory or not self._should_handle(
+            event.src_path, is_directory=False
+        ):
             return
 
         self.mark_touched(event.src_path)
 
     def on_modified(self, event):
-        if event.is_directory or is_temporary_file(event.src_path):
+        if event.is_directory or not self._should_handle(
+            event.src_path, is_directory=False
+        ):
             return
 
         self.mark_touched(event.src_path)
 
     def on_deleted(self, event):
-        if is_temporary_file(event.src_path):
+        if not self._should_handle(
+            event.src_path, is_directory=event.is_directory
+        ):
             return
 
         self.mark_touched(event.src_path, is_directory=event.is_directory)
 
     def on_moved(self, event):
-        if not is_temporary_file(event.src_path):
+        if self._should_handle(event.src_path, is_directory=event.is_directory):
             self.mark_touched(event.src_path, is_directory=event.is_directory)
 
-        if not is_temporary_file(event.dest_path):
+        if self._should_handle(event.dest_path, is_directory=event.is_directory):
             self.mark_touched(event.dest_path, is_directory=event.is_directory)
 
     def mark_touched(self, file_path: str, is_directory: bool = False) -> None:

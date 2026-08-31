@@ -6,7 +6,7 @@ from pathlib import Path
 from langchain_ollama import OllamaEmbeddings
 from watchdog.observers import Observer
 
-from directory_watcher.utils import is_temporary_file
+from directory_watcher.utils import should_process
 from directory_watcher.watcher import Watcher
 from folder2vector.config import (
     COLLECTION_NAME,
@@ -27,7 +27,7 @@ def watch():
     print(f"Starting file watcher on: {WATCH_PATH}")
     print("Press Ctrl+C to stop.")
 
-    event_handler = Watcher()
+    event_handler = Watcher(WATCH_PATH, PROCESSORS)
     observer = Observer()
     observer.schedule(event_handler, WATCH_PATH, recursive=True)
     observer.start()
@@ -97,11 +97,12 @@ def iter_supported_files(root: str):
     for path in root_path.rglob("*"):
         if not path.is_file():
             continue
-        if is_temporary_file(str(path)):
-            continue
-        if any(part.startswith(".") for part in path.relative_to(root_path).parts):
-            continue
-        if path.suffix.lower() not in PROCESSORS:
+        if not should_process(
+            str(path),
+            root,
+            is_directory=False,
+            supported_suffixes=PROCESSORS,
+        ):
             continue
         yield str(path)
 
