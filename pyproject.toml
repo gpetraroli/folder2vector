@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "folder2vector"
 version = "0.1.0"
+requires-python = ">=3.11"
 authors = [
     { name = "Giuseppe Petraroli", email = "g.petraroli@gmail.com" }
 ]
-requires-python = ">=3.11"
 dependencies = [
     "watchdog==6.0.0",
     "PyYAML==6.0.1",

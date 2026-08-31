@@ -3,10 +3,17 @@ import os
 import time
 from pathlib import Path
 
+from langchain_ollama import OllamaEmbeddings
 from watchdog.observers import Observer
 
 from directory_watcher.utils import is_temporary_file
 from directory_watcher.watcher import Watcher
+from folder2vector.config import (
+    COLLECTION_NAME,
+    DB_CONNECTION,
+    EMBEDDING_MODEL,
+    OLLAMA_URL,
+)
 from ingest.file_processor import process_file
 from ingest.file_processor.dispatcher import PROCESSORS
 from pgvector_repository import PGVectorRepository
@@ -45,7 +52,8 @@ def run():
 
 def init() -> None:
     os.makedirs(WATCH_PATH, exist_ok=True)
-    PGVectorRepository().reset_collection()
+    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_URL)
+    PGVectorRepository(connection_string=DB_CONNECTION, collection_name=COLLECTION_NAME, embeddings=embeddings).reset_collection()
 
     for file_path in iter_supported_files(WATCH_PATH):
         try:
