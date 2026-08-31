@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "folder2vector"
@@ -10,32 +10,32 @@ authors = [
     { name = "Giuseppe Petraroli", email = "g.petraroli@gmail.com" }
 ]
 dependencies = [
-    "watchdog==6.0.0",
-    "PyYAML==6.0.1",
+    "watchdog>=6.0.0",
+    "PyYAML>=6.0.1",
     "langchain",
     "langchain-community",
     "langchain-ollama",
-    "langchain-postgres==0.0.17",
+    "langchain-postgres>=0.0.17",
     "psycopg[binary]",
     "pypdf",
 ]
 
-[project.optional-dependencies]
+[project.scripts]
+folder2vector = "folder2vector.main:main"
+
+[dependency-groups]
 dev = [
     "ruff>=0.3.0",
     "pytest>=8.0.0",
     "mypy>=1.9.0"
 ]
 
-[project.scripts]
-folder2vector = "folder2vector.main:main"
-
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/folder2vector"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
