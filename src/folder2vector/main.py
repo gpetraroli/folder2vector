@@ -32,14 +32,16 @@ def watch():
     observer.schedule(event_handler, WATCH_PATH, recursive=True)
     observer.start()
 
+    pgvector_repository = get_pgvector_repository()
+
     try:
         while True:
             for pending_event in event_handler.pop_ready(SETTLE_SECONDS):
                 try:
                     if pending_event.is_directory:
-                        process_directory(pending_event.path)
+                        process_directory(pending_event.path, pgvector_repository)
                     else:
-                        process_file(pending_event.path)
+                        process_file(pending_event.path, pgvector_repository)
                 except Exception as e:
                     print(f"Error processing {pending_event.path}: {e}")
 
@@ -54,16 +56,13 @@ def watch():
 def init() -> None:
     os.makedirs(WATCH_PATH, exist_ok=True)
 
-    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_URL)
-    PGVectorRepository(
-        connection_string=DB_CONNECTION,
-        collection_name=COLLECTION_NAME,
-        embeddings=embeddings
-    ).reset_collection()
+    pgvector_repository = get_pgvector_repository()
+    
+    pgvector_repository.reset_collection()
 
     for file_path in iter_supported_files(WATCH_PATH):
         try:
-            process_file(file_path)
+            process_file(file_path, pgvector_repository)
         except Exception as e:
             print(f"Failed: {file_path}: {e}")
 
@@ -105,6 +104,15 @@ def iter_supported_files(root: str):
         if path.suffix.lower() not in PROCESSORS:
             continue
         yield str(path)
+
+
+def get_pgvector_repository() -> PGVectorRepository:
+    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_URL)
+    return PGVectorRepository(
+        connection_string=DB_CONNECTION,
+        collection_name=COLLECTION_NAME,
+        embeddings=embeddings
+    )
 
 
 if __name__ == "__main__":

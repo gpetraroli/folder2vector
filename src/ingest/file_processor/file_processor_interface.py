@@ -1,26 +1,14 @@
 from abc import ABC, abstractmethod
 
 from langchain_core.documents import Document
-from langchain_ollama import OllamaEmbeddings
 
-from folder2vector.config import (
-    COLLECTION_NAME,
-    DB_CONNECTION,
-    EMBEDDING_MODEL,
-    OLLAMA_URL,
-    get_source_path_to_store,
-)
+from folder2vector.config import get_source_path_to_store
 from pgvector_repository import PGVectorRepository
 
 
 class FileProcessorInterface(ABC):
-    def __init__(self):
-        embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_URL)
-        self.pgvector_repository = PGVectorRepository(
-            connection_string=DB_CONNECTION,
-            collection_name=COLLECTION_NAME,
-            embeddings=embeddings,
-        )
+    def __init__(self, pgvector_repository: PGVectorRepository):
+        self.pgvector_repository = pgvector_repository
 
     @abstractmethod
     def __str__(self) -> str:
@@ -31,6 +19,8 @@ class FileProcessorInterface(ABC):
         pass
 
     def embed_documents(self, file_path: str, documents: list[Document]) -> None:
+        # TODO: insert new chuncks before deleting.
+        
         source_path = get_source_path_to_store(file_path)
         
         self.pgvector_repository.delete_by_metadata({"source": source_path})
