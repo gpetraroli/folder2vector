@@ -52,8 +52,13 @@ def run():
 
 def init() -> None:
     os.makedirs(WATCH_PATH, exist_ok=True)
+
     embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_URL)
-    PGVectorRepository(connection_string=DB_CONNECTION, collection_name=COLLECTION_NAME, embeddings=embeddings).reset_collection()
+    PGVectorRepository(
+        connection_string=DB_CONNECTION,
+        collection_name=COLLECTION_NAME,
+        embeddings=embeddings
+    ).reset_collection()
 
     for file_path in iter_supported_files(WATCH_PATH):
         try:
