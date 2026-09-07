@@ -3,6 +3,7 @@ app:
 
   ollama_url: "http://localhost:11434"
   embedding_model: "nomic-embed-text-v2-moe"
+  ocr_model: "glm-ocr"
   db_connection: "postgresql+psycopg://postgres:postgres@localhost:5432/vectordb"
   collection_name: "documents"
   store_relative_path: true

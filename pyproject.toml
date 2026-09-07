@@ -18,6 +18,7 @@ dependencies = [
     "langchain-postgres>=0.0.17",
     "psycopg[binary]",
     "pypdf",
+    "pymupdf>=1.28.2",
 ]
 
 [project.scripts]
